@@ -7,7 +7,7 @@ import sys
 
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, StateGraph
-from langgraph.prebuilt import ToolNode, tools_condition
+from langgraph.prebuilt import ToolNode
 
 from src.agents import (
     coder_node,
@@ -20,6 +20,16 @@ from src.state import TeamState
 from src.tools import TOOLS
 
 MAX_ITERATIONS = 10
+
+
+def has_tool_calls(state: TeamState) -> str:
+    """Return 'tools' if the last message has tool calls, else 'supervisor'."""
+    msgs = state.get("messages", [])
+    if msgs:
+        last = msgs[-1]
+        if hasattr(last, "tool_calls") and last.tool_calls:
+            return "tools"
+    return "supervisor"
 
 
 def finalize_node(state: TeamState) -> dict:
@@ -95,8 +105,8 @@ def build_graph():
     for agent in ("researcher", "coder", "reviewer"):
         graph.add_conditional_edges(
             agent,
-            tools_condition,
-            {"tools": "tools", "__else__": "supervisor"},
+            has_tool_calls,
+            {"tools": "tools", "supervisor": "supervisor"},
         )
 
     graph.add_edge("tools", "supervisor")

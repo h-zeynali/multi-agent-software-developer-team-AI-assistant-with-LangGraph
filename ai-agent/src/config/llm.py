@@ -9,12 +9,20 @@ load_dotenv()
 
 
 class LLMConfig:
+    PROVIDER_GAPGPT = "gapgpt"
     PROVIDER_AGENTROUTER = "agentrouter"
     PROVIDER_OPENAI = "openai"
     PROVIDER_ANTHROPIC = "anthropic"
     PROVIDER_OLLAMA = "ollama"
 
     _providers = {
+        PROVIDER_GAPGPT: {
+            "model": os.getenv("GAPGPT_MODEL", "gpt-4o"),
+            "model_provider": "openai",
+            "api_key": os.getenv("GAPGPT_API_KEY"),
+            "base_url": os.getenv("GAPGPT_BASE_URL", "https://api.gapgpt.app/v1"),
+            "temperature": 0.7,
+        },
         PROVIDER_AGENTROUTER: {
             "model": os.getenv("AGENTROUTER_MODEL", "gpt-5.5"),
             "model_provider": "openai",
@@ -45,16 +53,16 @@ class LLMConfig:
 
     @classmethod
     def get_llm(cls, provider: str | None = None):
-        selected = provider or os.getenv("LLM_PROVIDER", cls.PROVIDER_AGENTROUTER)
-        config = cls._providers.get(selected, cls._providers[cls.PROVIDER_AGENTROUTER])
+        selected = provider or os.getenv("LLM_PROVIDER", cls.PROVIDER_GAPGPT)
+        config = cls._providers.get(selected, cls._providers[cls.PROVIDER_GAPGPT])
         kwargs = dict(config)
         return init_chat_model(**kwargs)
 
     @classmethod
     def get_fast_llm(cls):
-        fast_model = os.getenv("FAST_MODEL", "gpt-5.5")
-        provider = os.getenv("FAST_PROVIDER", cls.PROVIDER_AGENTROUTER)
-        config = cls._providers.get(provider, cls._providers[cls.PROVIDER_AGENTROUTER])
+        fast_model = os.getenv("FAST_MODEL", "gpt-4o")
+        provider = os.getenv("FAST_PROVIDER", cls.PROVIDER_GAPGPT)
+        config = cls._providers.get(provider, cls._providers[cls.PROVIDER_GAPGPT])
         kwargs = dict(config)
         kwargs["model"] = fast_model
         return init_chat_model(**kwargs)
