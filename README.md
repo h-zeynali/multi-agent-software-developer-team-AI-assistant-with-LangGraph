@@ -1,4 +1,4 @@
-# AI Multi-Agent System
+# AI Software Developer Multi-Agent Team Assistant
 
 A production-ready multi-agent system built with **LangGraph** that collaborates as a software development team. Agents share a typed state, use tools, and support multiple LLM providers.
 
