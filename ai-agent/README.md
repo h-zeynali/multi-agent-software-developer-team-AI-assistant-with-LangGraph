@@ -1,4 +1,4 @@
-# AI Multi-Agent System 🤖
+# AI Multi-Agent System
 
 A production-ready multi-agent system built with **LangGraph** that collaborates as a software development team. Agents share a typed state, use tools, and support multiple LLM providers.
 
